@@ -1,0 +1,1 @@
+module.exports = '<div class="event-debugger">\n  <pre class="more"></pre>\n  <div class="info"></div>\n  <div class="buttons">\n    <button class="btn prev">&lt;</button>\n    <button class="btn next">&gt;</button>\n    <button class="btn clear">Clear</button>\n    <!-- <button class="btn remove">&times;</button> -->\n  </div>\n</div>\n';

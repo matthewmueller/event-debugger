@@ -1,0 +1,24 @@
+{
+  "name": "event-debugger",
+  "repo": "matthewmueller/event-debugger",
+  "description": "step through events!",
+  "version": "0.0.1",
+  "keywords": [],
+  "dependencies": {
+    "matthewmueller/event-spy": "*",
+    "component/domify": "*",
+    "component/event": "*",
+    "component/classes": "*"
+  },
+  "development": {},
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": [
+    "index.js",
+    "template.js",
+    "linked-list.js"
+  ],
+  "styles": [
+    "event-debugger.css"
+  ]
+}

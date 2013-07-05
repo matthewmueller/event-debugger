@@ -1,0 +1,49 @@
+.event-debug {
+  outline: 2px solid #30BCFC !important;
+}
+
+.event-debugger {
+  color: #333;
+  position: absolute;
+  background: #fff;
+  bottom: 10px;
+  right: 10px;
+  width: 400px;
+  height: 30px;
+  border: 1px solid #ccc;
+}
+
+.event-debugger .info {
+  float: left;
+  line-height: 30px;
+  padding-left: 5px;
+}
+
+.event-debugger .buttons {
+  float: right;
+}
+
+.event-debugger .btn {
+  display: inline-block;
+  height: 30px;
+  border: 1px solid #ccc;
+  background: white;
+  border-top: none;
+  border-bottom: none;
+  margin: 0;
+  /*line-height: 30px;*/
+  cursor: pointer;
+}
+
+.event-debugger .btn.disabled {
+  background: #ccc;
+}
+
+.event-debugger .btn:last-child {
+  margin-right: 0;
+  border-right: none;
+}
+
+.event-debugger .more {
+  position: absolute;
+}
