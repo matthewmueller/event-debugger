@@ -8,7 +8,9 @@
     "matthewmueller/event-spy": "*",
     "component/domify": "*",
     "component/event": "*",
-    "component/classes": "*"
+    "component/classes": "*",
+    "component/reactive": "*",
+    "matthewmueller/print-element": "*"
   },
   "development": {},
   "license": "MIT",

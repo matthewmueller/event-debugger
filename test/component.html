@@ -24,21 +24,22 @@
   var ed = require('event-debugger');
   var spy = require('event-spy');
   var body = document.body;
+  var event = require('event');
   var ul = document.querySelector('ul');
   var a = document.querySelector('.a');
 
   ed('click');
 
-  a.addEventListener('click', function() {
-    // console.log('a');
+  event.bind(a, 'click', function(e) {
+    console.log('a');
   })
 
-  ul.addEventListener('click', function(e) {
-    // console.log('ul');
+  event.bind(ul, 'click', function(e) {
+    console.log('ul');
   })
 
-  body.addEventListener('click', function() {
-    // console.log('body');
-  })
+  event.bind(body, 'click', function(e) {
+    console.log('body');
+  });
 
 </script>

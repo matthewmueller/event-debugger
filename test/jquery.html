@@ -1,4 +1,5 @@
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;">
+<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
 <link rel="stylesheet" href="../build/build.css">
 <script src="../build/build.js"></script>
 
@@ -22,23 +23,14 @@
 
 <script>
   var ed = require('event-debugger');
-  var spy = require('event-spy');
-  var body = document.body;
-  var ul = document.querySelector('ul');
-  var a = document.querySelector('.a');
-
   ed('click');
 
-  a.addEventListener('click', function() {
-    // console.log('a');
-  })
+  $('li').click(function() {
+    console.log('here we are');
+  });
 
-  ul.addEventListener('click', function(e) {
-    // console.log('ul');
-  })
-
-  body.addEventListener('click', function() {
-    // console.log('body');
-  })
+  $('body').click(function() {
+    console.log('againz...');
+  });
 
 </script>

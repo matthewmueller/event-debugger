@@ -2,12 +2,14 @@
  * Module dependencies
  */
 
+var reactive = require('reactive');
 var domify = require('domify');
 var spy = require('event-spy');
 var el = domify(require('./template'));
 var event = require('event');
 var classes = require('classes');
 var List = require('./linked-list');
+var print = require('print-element');
 
 /**
  * Export `EventDebugger`
@@ -22,34 +24,58 @@ module.exports = EventDebugger;
 function EventDebugger(type) {
   if (!(this instanceof EventDebugger)) return new EventDebugger(type);
   var self = this;
-  this.type = type;
-  this.cursor = 0;
   this.el = el.cloneNode(true);
-  this.info = this.el.querySelector('.info');
-  this._more = this.el.querySelector('.more');
-  document.body.appendChild(this.el);
-  this.list = new List();
-  this.fns = [];
-  this.bind();
-  this.disabled();
+  reactive(this.el, {}, this);
+  document.documentElement.appendChild(this.el);
+  this.info = this.el.querySelector('.fn-string');
+  this.stack = [];
+  this.cursor = -1;
   event.bind(window, 'mousedown', this.mousedown.bind(this));
   spy(type, this.event.bind(this));
 }
 
 /**
- * Bind
+ * Toggle showing fn
  */
 
-EventDebugger.prototype.bind = function() {
-  var prev = this.el.querySelector('.prev');
-  var next = this.el.querySelector('.next');
-  var clear = this.el.querySelector('.clear');
+EventDebugger.prototype.fn = function(e) {
+  var target = e.target;
+  var cls = classes(target);
 
-  event.bind(this.el, 'click', function(e) { e.stopPropagation(); });
-  event.bind(prev, 'click', this.prev.bind(this));
-  event.bind(next, 'click', this.next.bind(this));
-  event.bind(clear, 'click', this.clear.bind(this));
-  event.bind(this.info, 'click', this.more.bind(this));
+  if (cls.has('active')) {
+    this.info.style.opacity = 0;
+  } else {
+    this.info.style.opacity = 1;
+  }
+
+  cls.toggle('active');
+};
+
+/**
+ * prev
+ */
+
+EventDebugger.prototype.prev = function(e) {
+  var target = e.target;
+  if (this.cursor <= 0) return;
+  var cur = this.stack[this.cursor];
+  classes(cur.ctx).remove('event-debug');
+  var next = this.stack[--this.cursor];
+  this.step(next);
+  this.disabled();
+};
+
+/**
+ * next
+ */
+
+EventDebugger.prototype.next = function() {
+  if (this.cursor >= this.stack.length - 1) return;
+  var cur = this.stack[this.cursor];
+  classes(cur.ctx).remove('event-debug');
+  var next = this.stack[++this.cursor];
+  this.step(next);
+  this.disabled();
 };
 
 /**
@@ -59,7 +85,6 @@ EventDebugger.prototype.bind = function() {
 EventDebugger.prototype.mousedown = function(e) {
   if (this.isDebugger(e.target)) return;
   this.clear();
-  this.disabled();
 };
 
 /**
@@ -68,66 +93,36 @@ EventDebugger.prototype.mousedown = function(e) {
 
 EventDebugger.prototype.event = function(e, fn) {
   var self = this;
-  var ctx = e.currentTarget;
-  var cls = classes(e.target);
   if (this.isDebugger(e.target)) return e.stopPropagation();
 
-  this.list.add(load, unload);
-  this.fns.push(fn);
-  this.more();
+  this.stack.push({
+    e: e,
+    fn: fn,
+    ctx: e.currentTarget
+  });
 
-  function load() {
-    classes(ctx).add('event-debug');
-    self.write(ctx, e);
-    fn.call(ctx, e);
-  }
+  this.disabled();
 
-  function unload() {
-    classes(ctx).remove('event-debug');
-  }
+  if (~this.cursor) return this;
+  this.cursor++;
+  var slice = this.stack[this.cursor];
+  this.step(slice);
 };
 
 /**
- * More
+ * Step to next function
  */
 
-EventDebugger.prototype.more = function() {
-  var cursor = this.list.cursor;
-  var fn = this.fns[cursor];
-  if (!fn) return this._more.style.opacity = 0;
-  this._more.textContent = fn.toString();
-  var height = +this._more.offsetHeight + 30;
-  this._more.style.top = -height + 'px';
-  this._more.style.opacity = 1;
-};
-
-/**
- * prev
- */
-
-EventDebugger.prototype.prev = function() {
-  this.list.prev();
-  this.more();
-};
-
-/**
- * next
- */
-
-EventDebugger.prototype.next = function() {
-  this.list.next();
-  this.more();
-};
-
-/**
- * Clear
- */
-
-EventDebugger.prototype.clear = function() {
-  this.info.innerText = '';
-  this.fns = [];
-  this.list.reset();
-  this.more();
+EventDebugger.prototype.step = function(slice) {
+  var e = slice.e;
+  var fn = slice.fn;
+  var ctx = slice.ctx;
+  var tag = print(ctx);
+  ctx.setAttribute('tag', tag);
+  classes(ctx).add('event-debug');
+  var fn = slice.fn;
+  fn.call(ctx, e);
+  this.info.innerText = fn.toString();
 };
 
 /**
@@ -137,31 +132,32 @@ EventDebugger.prototype.clear = function() {
 EventDebugger.prototype.disabled = function() {
   var prev = classes(this.el.querySelector('.prev'));
   var next = classes(this.el.querySelector('.next'));
+  var len = this.stack.length;
 
-  if (!this.list.length) {
+  if (!this.cursor || !len) {
     prev.add('disabled');
-    next.add('disabled');
-    return;
-  }
-
-  if (this.list.first()) {
-    prev.add('disabled');
-    next.remove('disabled');
-  } else if (this.list.last()) {
-    prev.remove('disabled');
-    next.add('disabled');
   } else {
     prev.remove('disabled');
+  }
+
+  if (this.cursor >= len - 1) {
+    next.add('disabled');
+  } else {
     next.remove('disabled');
   }
 };
 
 /**
- * Write
+ * Clear
  */
 
-EventDebugger.prototype.write = function(ctx, e) {
-  this.info.innerText = e.type + ' ' + ctx.tagName;
+EventDebugger.prototype.clear = function() {
+  var cur = this.stack[this.cursor];
+  if (cur) classes(cur.ctx).remove('event-debug');
+  this.stack = [];
+  this.cursor = -1;
+  this.info.innerText = '';
+  this.disabled();
 };
 
 /**
