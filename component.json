@@ -17,8 +17,7 @@
   "main": "index.js",
   "scripts": [
     "index.js",
-    "template.js",
-    "linked-list.js"
+    "template.js"
   ],
   "styles": [
     "event-debugger.css"
