@@ -8,7 +8,6 @@ var spy = require('event-spy');
 var el = domify(require('./template'));
 var event = require('event');
 var classes = require('classes');
-var List = require('./linked-list');
 var print = require('print-element');
 
 /**
