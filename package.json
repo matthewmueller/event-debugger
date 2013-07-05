@@ -1,6 +1,6 @@
 {
   "name": "event-debugger",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "step through events!",
   "main": "index.js",
   "repository": {
@@ -19,8 +19,6 @@
       "event-debugger/index.js": "index.js",
       "event-debugger/template.js": "template.js"
     },
-    "styles": {
-      "event-debugger/event-debugger.css": "event-debugger.css"
-    }
+    "styles": ["event-debugger.css"]
   }
 }
