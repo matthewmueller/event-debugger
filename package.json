@@ -1,0 +1,26 @@
+{
+  "name": "event-debugger",
+  "version": "0.0.1",
+  "description": "step through events!",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/MatthewMueller/event-debugger.git"
+  },
+  "keywords": [
+    "event",
+    "debugger",
+    "ui"
+  ],
+  "author": "Matthew Mueller",
+  "license": "MIT",
+  "component": {
+    "scripts": {
+      "event-debugger/index.js": "index.js",
+      "event-debugger/template.js": "template.js"
+    },
+    "styles": {
+      "event-debugger/event-debugger.css": "event-debugger.css"
+    }
+  }
+}
