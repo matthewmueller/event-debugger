@@ -1,8 +1,16 @@
 {
   "name": "event-debugger",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "step through events!",
   "main": "index.js",
+  "dependencies": {
+    "event-spy": "*",
+    "print-element": "*",
+    "domify": "*",
+    "event-component": "*",
+    "classes-component": "*",
+    "reactive-component": "*"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/MatthewMueller/event-debugger.git"

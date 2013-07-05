@@ -2,7 +2,7 @@
   "name": "event-debugger",
   "repo": "matthewmueller/event-debugger",
   "description": "step through events!",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "keywords": [],
   "dependencies": {
     "matthewmueller/event-spy": "*",
