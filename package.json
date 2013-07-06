@@ -1,6 +1,6 @@
 {
   "name": "event-debugger",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "step through events!",
   "main": "index.js",
   "dependencies": {

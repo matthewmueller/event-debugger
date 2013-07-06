@@ -1,4 +1,10 @@
 
+0.0.4 / 2013-07-05
+==================
+
+* innerText => textContent for FF. fixes: #1
+* fixed for window.addListener
+
 0.0.3 / 2013-07-05
 ==================
 
