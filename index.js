@@ -58,7 +58,7 @@ EventDebugger.prototype.prev = function(e) {
   var target = e.target;
   if (this.cursor <= 0) return;
   var cur = this.stack[this.cursor];
-  classes(cur.ctx).remove('event-debug');
+  if (window != cur.ctx) classes(cur.ctx).remove('event-debug');
   var next = this.stack[--this.cursor];
   this.step(next);
   this.disabled();
@@ -116,12 +116,18 @@ EventDebugger.prototype.step = function(slice) {
   var e = slice.e;
   var fn = slice.fn;
   var ctx = slice.ctx;
-  var tag = print(ctx);
-  ctx.setAttribute('tag', tag);
-  classes(ctx).add('event-debug');
   var fn = slice.fn;
+
+  if (window != ctx) {
+    var tag = print(ctx);
+    ctx.setAttribute('tag', tag);
+    classes(ctx).add('event-debug');
+    this.info.innerText = fn.toString();
+  } else {
+    this.info.innerText = 'window: ' + fn.toString();
+  }
+
   fn.call(ctx, e);
-  this.info.innerText = fn.toString();
 };
 
 /**
