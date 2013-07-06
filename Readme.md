@@ -3,7 +3,7 @@
 
   step through events! must be initialized at the top of your scripts.
 
-  ![event debugger](http://i.cloudup.com/ch5RHQwJq0.png)
+  ![event debugger](http://i.cloudup.com/EfNUKKF79q.png)
 
 ## Installation
 
