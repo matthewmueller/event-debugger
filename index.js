@@ -134,9 +134,9 @@ EventDebugger.prototype.step = function(slice) {
     var tag = print(ctx);
     ctx.setAttribute('tag', tag);
     classes(ctx).add('event-debug');
-    this.info.innerText = fn.toString();
+    this.info.textContent = fn.toString();
   } else {
-    this.info.innerText = 'window: ' + fn.toString();
+    this.info.textContent = 'window: ' + fn.toString();
   }
 
   fn.call(ctx, e);
@@ -173,7 +173,7 @@ EventDebugger.prototype.clear = function() {
   if (cur && window != cur.ctx) classes(cur.ctx).remove('event-debug');
   this.stack = [];
   this.cursor = -1;
-  this.info.innerText = '';
+  this.info.textContent = '';
   this.disabled();
 };
 
