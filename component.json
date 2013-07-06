@@ -5,21 +5,6 @@
   "version": "0.0.3",
   "keywords": [],
   "dependencies": {
-    "matthewmueller/event-spy": "*",
-    "component/domify": "*",
-    "component/event": "*",
-    "component/classes": "*",
-    "component/reactive": "*",
-    "matthewmueller/print-element": "*"
-  },
-  "development": {},
-  "license": "MIT",
-  "main": "index.js",
-  "scripts": [
-    "index.js",
-    "template.js"
-  ],
-  "styles": [
-    "event-debugger.css"
-  ]
+    "matthewmueller/event-debugger": "*"
+  }
 }

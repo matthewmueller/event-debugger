@@ -253,36 +253,35 @@ require.register("component-reactive/lib/adapter.js", Function("exports, require
 require.register("matthewmueller-print-element/index.js", Function("exports, require, module",
 "/**\n * Expose `print`\n */\n\nmodule.exports = print;\n\n/**\n * Initialize `print`\n *\n * @param {Element} print\n * @return {String}\n */\n\nfunction print(el) {\n  if (1 != el.nodeType && window != el) throw Error('Expecting an element node');\n  var tagName = el.tagName.toLowerCase();\n  var className = el.className.replace(/\\s+/g, '.');\n  var id = el.id;\n\n  if (className) className = '.' + className;\n  if (id) id = '#' + id;\n\n  return tagName + id + className;\n}\n//@ sourceURL=matthewmueller-print-element/index.js"
 ));
-require.register("event-debugger/index.js", Function("exports, require, module",
-"/**\n * Module dependencies\n */\n\nvar reactive = require('reactive');\nvar domify = require('domify');\nvar spy = require('event-spy');\nvar el = domify(require('./template'));\nvar event = require('event');\nvar classes = require('classes');\nvar print = require('print-element');\n\n/**\n * Export `EventDebugger`\n */\n\nmodule.exports = EventDebugger;\n\n/**\n * Initialize `EventDebugger`\n */\n\nfunction EventDebugger(type) {\n  if (!(this instanceof EventDebugger)) return new EventDebugger(type);\n  var self = this;\n  this.el = el.cloneNode(true);\n  reactive(this.el, {}, this);\n  document.documentElement.appendChild(this.el);\n  this.info = this.el.querySelector('.fn-string');\n  this.stack = [];\n  this.cursor = -1;\n  event.bind(window, 'mousedown', this.mousedown.bind(this));\n  spy(type, this.event.bind(this));\n}\n\n/**\n * Toggle showing fn\n */\n\nEventDebugger.prototype.fn = function(e) {\n  var target = e.target;\n  var cls = classes(target);\n\n  if (cls.has('active')) {\n    this.info.style.opacity = 0;\n  } else {\n    this.info.style.opacity = 1;\n  }\n\n  cls.toggle('active');\n};\n\n/**\n * prev\n */\n\nEventDebugger.prototype.prev = function(e) {\n  var target = e.target;\n  if (this.cursor <= 0) return;\n  var cur = this.stack[this.cursor];\n  classes(cur.ctx).remove('event-debug');\n  var next = this.stack[--this.cursor];\n  this.step(next);\n  this.disabled();\n};\n\n/**\n * next\n */\n\nEventDebugger.prototype.next = function() {\n  if (this.cursor >= this.stack.length - 1) return;\n  var cur = this.stack[this.cursor];\n  classes(cur.ctx).remove('event-debug');\n  var next = this.stack[++this.cursor];\n  this.step(next);\n  this.disabled();\n};\n\n/**\n * mousedown\n */\n\nEventDebugger.prototype.mousedown = function(e) {\n  if (this.isDebugger(e.target)) return;\n  this.clear();\n};\n\n/**\n * Event\n */\n\nEventDebugger.prototype.event = function(e, fn) {\n  var self = this;\n  if (this.isDebugger(e.target)) return e.stopPropagation();\n\n  this.stack.push({\n    e: e,\n    fn: fn,\n    ctx: e.currentTarget\n  });\n\n  this.disabled();\n\n  if (~this.cursor) return this;\n  this.cursor++;\n  var slice = this.stack[this.cursor];\n  this.step(slice);\n};\n\n/**\n * Step to next function\n */\n\nEventDebugger.prototype.step = function(slice) {\n  var e = slice.e;\n  var fn = slice.fn;\n  var ctx = slice.ctx;\n  var tag = print(ctx);\n  ctx.setAttribute('tag', tag);\n  classes(ctx).add('event-debug');\n  var fn = slice.fn;\n  fn.call(ctx, e);\n  this.info.innerText = fn.toString();\n};\n\n/**\n * Disabled\n */\n\nEventDebugger.prototype.disabled = function() {\n  var prev = classes(this.el.querySelector('.prev'));\n  var next = classes(this.el.querySelector('.next'));\n  var len = this.stack.length;\n\n  if (!this.cursor || !len) {\n    prev.add('disabled');\n  } else {\n    prev.remove('disabled');\n  }\n\n  if (this.cursor >= len - 1) {\n    next.add('disabled');\n  } else {\n    next.remove('disabled');\n  }\n};\n\n/**\n * Clear\n */\n\nEventDebugger.prototype.clear = function() {\n  var cur = this.stack[this.cursor];\n  if (cur) classes(cur.ctx).remove('event-debug');\n  this.stack = [];\n  this.cursor = -1;\n  this.info.innerText = '';\n  this.disabled();\n};\n\n/**\n * isDebugger\n */\n\nEventDebugger.prototype.isDebugger = function(target) {\n  var node = target;\n  while(node = node.parentNode) {\n    if (node == document) return false;\n    if (classes(node).has('event-debugger')) return true;\n  }\n  return false;\n};\n//@ sourceURL=event-debugger/index.js"
+require.register("matthewmueller-event-debugger/index.js", Function("exports, require, module",
+"/**\n * Module dependencies\n */\n\nvar reactive = require('reactive');\nvar domify = require('domify');\nvar spy = require('event-spy');\nvar el = domify(require('./template'));\nvar event = require('event');\nvar classes = require('classes');\nvar print = require('print-element');\n\n/**\n * Export `EventDebugger`\n */\n\nmodule.exports = EventDebugger;\n\n/**\n * Initialize `EventDebugger`\n */\n\nfunction EventDebugger(type) {\n  if (!(this instanceof EventDebugger)) return new EventDebugger(type);\n  var self = this;\n  this.el = el.cloneNode(true);\n  reactive(this.el, {}, this);\n  document.documentElement.appendChild(this.el);\n  this.info = this.el.querySelector('.fn-string');\n  this.stack = [];\n  this.cursor = -1;\n  event.bind(window, 'mousedown', this.mousedown.bind(this));\n  spy(type, this.event.bind(this));\n}\n\n/**\n * Toggle showing fn\n */\n\nEventDebugger.prototype.fn = function(e) {\n  var target = e.target;\n  var cls = classes(target);\n\n  if (cls.has('active')) {\n    this.info.style.opacity = 0;\n  } else {\n    this.info.style.opacity = 1;\n  }\n\n  cls.toggle('active');\n};\n\n/**\n * prev\n */\n\nEventDebugger.prototype.prev = function(e) {\n  var target = e.target;\n  if (this.cursor <= 0) return;\n  var cur = this.stack[this.cursor];\n  if (window != cur.ctx) classes(cur.ctx).remove('event-debug');\n  var next = this.stack[--this.cursor];\n  this.step(next);\n  this.disabled();\n};\n\n/**\n * next\n */\n\nEventDebugger.prototype.next = function() {\n  if (this.cursor >= this.stack.length - 1) return;\n  var cur = this.stack[this.cursor];\n  classes(cur.ctx).remove('event-debug');\n  var next = this.stack[++this.cursor];\n  this.step(next);\n  this.disabled();\n};\n\n/**\n * mousedown\n */\n\nEventDebugger.prototype.mousedown = function(e) {\n  if (this.isDebugger(e.target)) return;\n  this.clear();\n};\n\n/**\n * Event\n */\n\nEventDebugger.prototype.event = function(e, fn) {\n  var self = this;\n  if (this.isDebugger(e.target)) return e.stopPropagation();\n\n  this.stack.push({\n    e: e,\n    fn: fn,\n    ctx: e.currentTarget\n  });\n\n  this.disabled();\n\n  if (~this.cursor) return this;\n  this.cursor++;\n  var slice = this.stack[this.cursor];\n  this.step(slice);\n};\n\n/**\n * Step to next function\n */\n\nEventDebugger.prototype.step = function(slice) {\n  var e = slice.e;\n  var fn = slice.fn;\n  var ctx = slice.ctx;\n  var fn = slice.fn;\n\n  if (window != ctx) {\n    var tag = print(ctx);\n    ctx.setAttribute('tag', tag);\n    classes(ctx).add('event-debug');\n    this.info.innerText = fn.toString();\n  } else {\n    this.info.innerText = 'window: ' + fn.toString();\n  }\n\n  fn.call(ctx, e);\n};\n\n/**\n * Disabled\n */\n\nEventDebugger.prototype.disabled = function() {\n  var prev = classes(this.el.querySelector('.prev'));\n  var next = classes(this.el.querySelector('.next'));\n  var len = this.stack.length;\n\n  if (!this.cursor || !len) {\n    prev.add('disabled');\n  } else {\n    prev.remove('disabled');\n  }\n\n  if (this.cursor >= len - 1) {\n    next.add('disabled');\n  } else {\n    next.remove('disabled');\n  }\n};\n\n/**\n * Clear\n */\n\nEventDebugger.prototype.clear = function() {\n  var cur = this.stack[this.cursor];\n  if (cur) classes(cur.ctx).remove('event-debug');\n  this.stack = [];\n  this.cursor = -1;\n  this.info.innerText = '';\n  this.disabled();\n};\n\n/**\n * isDebugger\n */\n\nEventDebugger.prototype.isDebugger = function(target) {\n  var node = target;\n  while(node = node.parentNode) {\n    if (node == document) return false;\n    if (classes(node).has('event-debugger')) return true;\n  }\n  return false;\n};\n//@ sourceURL=matthewmueller-event-debugger/index.js"
 ));
-require.register("event-debugger/template.js", Function("exports, require, module",
-"module.exports = '<div class=\"event-debugger\">\\n  <pre class=\"fn-string\"></pre>\\n  <div class=\"btn-group btn-group-vertical\">\\n    <button class=\"btn fn active\" on-click=\"fn\">&fnof;</button>\\n    <button class=\"btn prev\" on-click=\"prev\">&#9664;</button>\\n    <button class=\"btn next\" on-click=\"next\">&#9654;</button>\\n    <button class=\"btn clear\" on-click=\"clear\">&#10006;</button>\\n  </div>\\n</div>\\n';//@ sourceURL=event-debugger/template.js"
+require.register("matthewmueller-event-debugger/template.js", Function("exports, require, module",
+"module.exports = '<div class=\"event-debugger\">\\n  <pre class=\"fn-string\"></pre>\\n  <div class=\"btn-group btn-group-vertical\">\\n    <button class=\"btn fn active\" on-click=\"fn\">&fnof;</button>\\n    <button class=\"btn prev\" on-click=\"prev\">&#9664;</button>\\n    <button class=\"btn next\" on-click=\"next\">&#9654;</button>\\n    <button class=\"btn clear\" on-click=\"clear\">&#10006;</button>\\n  </div>\\n</div>\\n';//@ sourceURL=matthewmueller-event-debugger/template.js"
 ));
-require.alias("matthewmueller-event-spy/index.js", "event-debugger/deps/event-spy/index.js");
-require.alias("matthewmueller-event-spy/index.js", "event-debugger/deps/event-spy/index.js");
-require.alias("matthewmueller-event-spy/index.js", "event-spy/index.js");
+require.alias("matthewmueller-event-debugger/index.js", "event-debugger/deps/event-debugger/index.js");
+require.alias("matthewmueller-event-debugger/template.js", "event-debugger/deps/event-debugger/template.js");
+require.alias("matthewmueller-event-debugger/index.js", "event-debugger/deps/event-debugger/index.js");
+require.alias("matthewmueller-event-debugger/index.js", "event-debugger/index.js");
+require.alias("matthewmueller-event-spy/index.js", "matthewmueller-event-debugger/deps/event-spy/index.js");
+require.alias("matthewmueller-event-spy/index.js", "matthewmueller-event-debugger/deps/event-spy/index.js");
 require.alias("matthewmueller-event-spy/index.js", "matthewmueller-event-spy/index.js");
 
-require.alias("component-domify/index.js", "event-debugger/deps/domify/index.js");
-require.alias("component-domify/index.js", "domify/index.js");
+require.alias("component-domify/index.js", "matthewmueller-event-debugger/deps/domify/index.js");
 
-require.alias("component-event/index.js", "event-debugger/deps/event/index.js");
-require.alias("component-event/index.js", "event/index.js");
+require.alias("component-event/index.js", "matthewmueller-event-debugger/deps/event/index.js");
 
-require.alias("component-classes/index.js", "event-debugger/deps/classes/index.js");
-require.alias("component-classes/index.js", "classes/index.js");
+require.alias("component-classes/index.js", "matthewmueller-event-debugger/deps/classes/index.js");
 require.alias("component-indexof/index.js", "component-classes/deps/indexof/index.js");
 
-require.alias("component-reactive/lib/index.js", "event-debugger/deps/reactive/lib/index.js");
-require.alias("component-reactive/lib/utils.js", "event-debugger/deps/reactive/lib/utils.js");
-require.alias("component-reactive/lib/text-binding.js", "event-debugger/deps/reactive/lib/text-binding.js");
-require.alias("component-reactive/lib/attr-binding.js", "event-debugger/deps/reactive/lib/attr-binding.js");
-require.alias("component-reactive/lib/binding.js", "event-debugger/deps/reactive/lib/binding.js");
-require.alias("component-reactive/lib/bindings.js", "event-debugger/deps/reactive/lib/bindings.js");
-require.alias("component-reactive/lib/adapter.js", "event-debugger/deps/reactive/lib/adapter.js");
-require.alias("component-reactive/lib/index.js", "event-debugger/deps/reactive/index.js");
-require.alias("component-reactive/lib/index.js", "reactive/index.js");
+require.alias("component-reactive/lib/index.js", "matthewmueller-event-debugger/deps/reactive/lib/index.js");
+require.alias("component-reactive/lib/utils.js", "matthewmueller-event-debugger/deps/reactive/lib/utils.js");
+require.alias("component-reactive/lib/text-binding.js", "matthewmueller-event-debugger/deps/reactive/lib/text-binding.js");
+require.alias("component-reactive/lib/attr-binding.js", "matthewmueller-event-debugger/deps/reactive/lib/attr-binding.js");
+require.alias("component-reactive/lib/binding.js", "matthewmueller-event-debugger/deps/reactive/lib/binding.js");
+require.alias("component-reactive/lib/bindings.js", "matthewmueller-event-debugger/deps/reactive/lib/bindings.js");
+require.alias("component-reactive/lib/adapter.js", "matthewmueller-event-debugger/deps/reactive/lib/adapter.js");
+require.alias("component-reactive/lib/index.js", "matthewmueller-event-debugger/deps/reactive/index.js");
 require.alias("component-format-parser/index.js", "component-reactive/deps/format-parser/index.js");
 
 require.alias("component-props/index.js", "component-reactive/deps/props/index.js");
@@ -301,10 +300,9 @@ require.alias("component-query/index.js", "component-reactive/deps/query/index.j
 
 require.alias("component-reactive/lib/index.js", "component-reactive/index.js");
 
-require.alias("matthewmueller-print-element/index.js", "event-debugger/deps/print-element/index.js");
-require.alias("matthewmueller-print-element/index.js", "event-debugger/deps/print-element/index.js");
-require.alias("matthewmueller-print-element/index.js", "print-element/index.js");
+require.alias("matthewmueller-print-element/index.js", "matthewmueller-event-debugger/deps/print-element/index.js");
+require.alias("matthewmueller-print-element/index.js", "matthewmueller-event-debugger/deps/print-element/index.js");
 require.alias("matthewmueller-print-element/index.js", "matthewmueller-print-element/index.js");
 
-require.alias("event-debugger/index.js", "event-debugger/index.js");
+require.alias("matthewmueller-event-debugger/index.js", "matthewmueller-event-debugger/index.js");
 
