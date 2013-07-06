@@ -30,6 +30,7 @@ function EventDebugger(type) {
   this.stack = [];
   this.cursor = -1;
   event.bind(window, 'mousedown', this.mousedown.bind(this));
+  event.bind(window, type, this.done.bind(this));
   spy(type, this.event.bind(this));
 }
 
@@ -71,7 +72,7 @@ EventDebugger.prototype.prev = function(e) {
 EventDebugger.prototype.next = function() {
   if (this.cursor >= this.stack.length - 1) return;
   var cur = this.stack[this.cursor];
-  classes(cur.ctx).remove('event-debug');
+  if (window != cur.ctx) classes(cur.ctx).remove('event-debug');
   var next = this.stack[++this.cursor];
   this.step(next);
   this.disabled();
@@ -84,6 +85,17 @@ EventDebugger.prototype.next = function() {
 EventDebugger.prototype.mousedown = function(e) {
   if (this.isDebugger(e.target)) return;
   this.clear();
+};
+
+/**
+ * Done propagating
+ */
+
+EventDebugger.prototype.done = function(e) {
+  var self = this;
+  setTimeout(function() {
+    self.disabled();
+  }, 0);
 };
 
 /**
@@ -158,7 +170,7 @@ EventDebugger.prototype.disabled = function() {
 
 EventDebugger.prototype.clear = function() {
   var cur = this.stack[this.cursor];
-  if (cur) classes(cur.ctx).remove('event-debug');
+  if (cur && window != cur.ctx) classes(cur.ctx).remove('event-debug');
   this.stack = [];
   this.cursor = -1;
   this.info.innerText = '';
