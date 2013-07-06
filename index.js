@@ -121,7 +121,7 @@ EventDebugger.prototype.step = function(slice) {
   classes(ctx).add('event-debug');
   var fn = slice.fn;
   fn.call(ctx, e);
-  this.info.innerText = fn.toString();
+  this.info.textContent = fn.toString();
 };
 
 /**
