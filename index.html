@@ -1,1 +1,44 @@
-My Page
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;">
+<link rel="stylesheet" href="../build/build.css">
+<script src="../build/build.js"></script>
+
+<style>
+  li {
+    list-style: none;
+    padding: 10px;
+    margin: 10px;
+    background: whiteSmoke;
+  }
+</style>
+
+<body>
+  <ul>
+    <li class="a">a</li>
+    <li class="b">b</li>
+    <li class="c">c</li>
+    <li class="d">d</li>
+  </ul>
+</body>
+
+<script>
+  var ed = require('event-debugger');
+  var spy = require('event-spy');
+  var body = document.body;
+  var ul = document.querySelector('ul');
+  var a = document.querySelector('.a');
+
+  ed('click');
+
+  a.addEventListener('click', function() {
+    // console.log('a');
+  })
+
+  ul.addEventListener('click', function(e) {
+    // console.log('ul');
+  })
+
+  body.addEventListener('click', function() {
+    // console.log('body');
+  })
+
+</script>
